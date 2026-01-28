@@ -15,7 +15,7 @@ ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip,
 
 export default function RMS() {
   // UI state (UNCHANGED)
-  const [selectedFile, setSelectedFile] = useState("simulated1.csv");
+  const [selectedFile, setSelectedFile] = useState("Inputs/simulated1.csv");
   const [inputs, setInputs] = useState([
     { id: "lambda", label: "Forgetting factor", min: 0.001, max: 1, step: 0.001, value: 0.98 },
     { id: "M", label: "Filter length", min: 2, max: 50, step: 1, value: 5 },
@@ -32,8 +32,8 @@ export default function RMS() {
   const [rlsError, setRlsError] = useState([]);
 
   const fileOptions = [
-    { name: "simulated.csv", file: "simulated1.csv" },
-    { name: "real.csv", file: "real.csv" },
+    { name: "simulated.csv", file: "Inputs/simulated1.csv" },
+    { name: "real.csv", file: "Inputs/real.csv" },
   ];
 
   /* ---------- helpers ---------- */
@@ -46,7 +46,12 @@ export default function RMS() {
 
   /* ---------- CSV ---------- */
   const readCSV = async (filename) => {
-    const res = await fetch(`/Inputs/${filename}`);
+    const buildBase = import.meta.env.BASE_URL || "/";
+    const normalized = filename.startsWith("http")
+      ? filename
+      : buildBase.replace(/\/$/, "") + "/" + filename.replace(/^\/+/, "");
+
+    const res = await fetch(normalized);
     const text = await res.text();
     const parsed = Papa.parse(text, { dynamicTyping: true }).data;
     return parsed.flat().map(Number).filter((v) => !isNaN(v));

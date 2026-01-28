@@ -10,7 +10,7 @@ import RLS from "./pages/RMS.jsx";
 
 const App = () => {
   return (
-    <Router>
+    <Router basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path="/" element={<Navigate to="/simulation" />} />
         <Route path="/simulation" element={<Simulation />} />

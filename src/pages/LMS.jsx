@@ -28,20 +28,25 @@ export default function LMS() {
 
   const [stepSize, setStepSize] = useState(0.01);
   const [M, setM] = useState(10);
-  const [selectedCSV, setSelectedCSV] = useState("/Inputs/real.csv");
+  const [selectedCSV, setSelectedCSV] = useState("Inputs/real.csv");
 
   const [code, setCode] = useState("");
   const [codeHtml, setCodeHtml] = useState("Code will be generated here!");
   const [loading, setLoading] = useState(false);
 
   const csvFiles = [
-    { label: "Real Signal", file: "/Inputs/real.csv" },
-    { label: "Simulated 1", file: "/Inputs/simulated1.csv" },
+    { label: "Real Signal", file: "Inputs/real.csv" },
+    { label: "Simulated 1", file: "Inputs/simulated1.csv" },
   ];
 
   // ---------------- READ CSV ----------------
   const readCSV = async (filePath) => {
-    const response = await fetch(filePath);
+    const buildBase = import.meta.env.BASE_URL || "/";
+    const normalized = filePath.startsWith("http")
+      ? filePath
+      : buildBase.replace(/\/$/, "") + "/" + filePath.replace(/^\/+/, "");
+
+    const response = await fetch(normalized);
     const text = await response.text();
     const parsed = Papa.parse(text, { dynamicTyping: true }).data;
     return parsed.flat().filter((v) => !isNaN(v));
